@@ -1,6 +1,6 @@
 //------------------------------------------------------------------------------
 /*
-    This file is part of ripple-libpp: https://github.com/ripple/ripple-libpp
+    This file is part of divvy-libpp: https://github.com/xdv/divvy-libpp
     Copyright (c) 2016 Ripple Labs Inc.
 
     Permission to use, copy, modify, and/or distribute this software for any
@@ -17,28 +17,28 @@
 */
 //==============================================================================
 
-#include <ripple/protocol/AccountID.h>
-#include <ripple/protocol/BuildInfo.h>
-#include <ripple/protocol/digest.h>
-#include <ripple/protocol/HashPrefix.h>
-#include <ripple/protocol/JsonFields.h>
-#include <ripple/protocol/Sign.h>
-#include <ripple/protocol/st.h>
-#include <ripple/protocol/TxFlags.h>
-#include <ripple/basics/StringUtilities.h>
-#include <ripple/json/to_string.h>
+#include <divvy/protocol/AccountID.h>
+#include <divvy/protocol/BuildInfo.h>
+#include <divvy/protocol/digest.h>
+#include <divvy/protocol/HashPrefix.h>
+#include <divvy/protocol/JsonFields.h>
+#include <divvy/protocol/Sign.h>
+#include <divvy/protocol/st.h>
+#include <divvy/protocol/TxFlags.h>
+#include <divvy/basics/StringUtilities.h>
+#include <divvy/json/to_string.h>
 #include <algorithm>
 
-std::string serialize(ripple::STTx const& tx)
+std::string serialize(divvy::STTx const& tx)
 {
-    using namespace ripple;
+    using namespace divvy;
 
     return strHex(tx.getSerializer().peekData());
 }
 
-std::shared_ptr<ripple::STTx const> deserialize(std::string blob)
+std::shared_ptr<divvy::STTx const> deserialize(std::string blob)
 {
-    using namespace ripple;
+    using namespace divvy;
 
     auto ret{ strUnHex(blob) };
 
@@ -52,10 +52,10 @@ std::shared_ptr<ripple::STTx const> deserialize(std::string blob)
 
 //------------------------------------------------------------------------------
 
-bool demonstrateSigning(ripple::KeyType keyType, std::string seedStr,
+bool demonstrateSigning(divvy::KeyType keyType, std::string seedStr,
     std::string expectedAccount)
 {
-    using namespace ripple;
+    using namespace divvy;
 
     auto const seed = parseGenericSeed(seedStr);
     assert(seed);
@@ -145,15 +145,15 @@ bool exerciseSingleSign ()
 {
     std::vector<bool> passes;
 
-    passes.emplace_back(demonstrateSigning(ripple::KeyType::secp256k1,
+    passes.emplace_back(demonstrateSigning(divvy::KeyType::secp256k1,
         "alice", "rG1QQv2nh2gr7RCZ1P8YYcBUKCCN633jCn"));
 
-    passes.emplace_back(demonstrateSigning(ripple::KeyType::ed25519,
+    passes.emplace_back(demonstrateSigning(divvy::KeyType::ed25519,
         "alice", "r9mC1zjD9u5SJXw56pdPhxoDSHaiNcisET"));
 
     // Genesis account w/ not-so-secret key.
     // Never hardcode a real secret key.
-    passes.emplace_back(demonstrateSigning(ripple::KeyType::secp256k1,
+    passes.emplace_back(demonstrateSigning(divvy::KeyType::secp256k1,
         "snoPBrXtMeMyMHUVTgbuqAfg1SUTb", "rHb9CJAWyB4rj91VRWn96DkukG4bwdtyTh"));
 
     {
@@ -184,16 +184,16 @@ bool exerciseSingleSign ()
 // Demonstrate multisigning.
 
 // Helper function that asserts if for some reason we can't create a seed.
-ripple::Seed getSeed (std::string const& seedText)
+divvy::Seed getSeed (std::string const& seedText)
 {
     // WARNING!
-    // Never use ripple::parseGenericSeed() for secure code.  Call
-    // ripple::randomSeed() instead, since it is cryptographically secure.
-    boost::optional<ripple::Seed> const possibleSeed {
-        ripple::parseGenericSeed (seedText)};
+    // Never use divvy::parseGenericSeed() for secure code.  Call
+    // divvy::randomSeed() instead, since it is cryptographically secure.
+    boost::optional<divvy::Seed> const possibleSeed {
+        divvy::parseGenericSeed (seedText)};
 
     // Should not be necessary in production code, since you used
-    // ripple::randomSeed().  Right?
+    // divvy::randomSeed().  Right?
     assert (possibleSeed);
 
     return *possibleSeed;
@@ -203,39 +203,39 @@ ripple::Seed getSeed (std::string const& seedText)
 class Credentials
 {
     std::string const name_;
-    ripple::KeyType const keyType_;
-    ripple::Seed const seed_;
-    std::pair<ripple::PublicKey, ripple::SecretKey> const keys_;
-    ripple::AccountID const id_;
+    divvy::KeyType const keyType_;
+    divvy::Seed const seed_;
+    std::pair<divvy::PublicKey, divvy::SecretKey> const keys_;
+    divvy::AccountID const id_;
 
 public:
     Credentials (
         std::string name,
-        ripple::KeyType keyType = ripple::KeyType::secp256k1)
+        divvy::KeyType keyType = divvy::KeyType::secp256k1)
     : name_ (name)
     , keyType_ (keyType)
     , seed_ (getSeed (name_))
-    , keys_ (ripple::generateKeyPair (keyType_, seed_))
-    , id_ (ripple::calcAccountID (keys_.first))
+    , keys_ (divvy::generateKeyPair (keyType_, seed_))
+    , id_ (divvy::calcAccountID (keys_.first))
     {
     }
 
     std::string const& name() const { return name_; }
-    ripple::KeyType const& keyType() const { return keyType_; }
-    ripple::Seed const& seed() const { return seed_; }
-    ripple::SecretKey const& secretKey() const { return keys_.second; }
-    ripple::PublicKey const& publicKey() const { return keys_.first; }
-    ripple::AccountID const& id() const { return id_; }
+    divvy::KeyType const& keyType() const { return keyType_; }
+    divvy::Seed const& seed() const { return seed_; }
+    divvy::SecretKey const& secretKey() const { return keys_.second; }
+    divvy::PublicKey const& publicKey() const { return keys_.first; }
+    divvy::AccountID const& id() const { return id_; }
 };
 
 // Build a transaction that can be multisigned.  All fields must be filled in,
 // including sequence and fee, before any signatures are applied.  If the
 // contents of the transaction are modified then any previously provided
 // multi-signatures will become invalid.
-ripple::STTx buildMultisignTx (
-    ripple::AccountID const& id, std::uint32_t seq, std::uint32_t fee)
+divvy::STTx buildMultisignTx (
+    divvy::AccountID const& id, std::uint32_t seq, std::uint32_t fee)
 {
-    using namespace ripple;
+    using namespace divvy;
 
     STTx noopTx {ttACCOUNT_SET,
         [id, seq, fee] (auto& obj)
@@ -255,14 +255,14 @@ ripple::STTx buildMultisignTx (
 
 // Apply one multi-signature to the supplied transaction.  The signer
 // provides their AccountID, PublicKey, and SecretKey.
-bool multisign (ripple::STTx& tx, Credentials const& signer)
+bool multisign (divvy::STTx& tx, Credentials const& signer)
 {
-    using namespace ripple;
+    using namespace divvy;
 
     // Get the TxnSignature.
     Serializer s = buildMultiSigningData (tx, signer.id());
 
-    auto const multisig = ripple::sign (
+    auto const multisig = divvy::sign (
         signer.publicKey(), signer.secretKey(), s.slice());
 
     // Make the signer object that we'll inject into the array.
@@ -292,14 +292,14 @@ bool multisign (ripple::STTx& tx, Credentials const& signer)
     assert (pass);
 
     // To submit multisigned JSON to the network use this RPC command:
-    // $ rippled submit_multisigned '<all JSON>'
+    // $ divvyd submit_multisigned '<all JSON>'
     std::cout << "\nMultisigned JSON: \n"
         << tx.getJson(0, false).toStyledString()  << std::endl;
 
     // Alternatively, to submit the multisigned blob to the network:
     //  1. Extract the hex string (including the quotes) following "tx"
     //  2. Then use this RPC command:
-    //     $ rippled submit <quoted hex string>
+    //     $ divvyd submit <quoted hex string>
     std::cout << "Multisigned blob:"
         << tx.getJson(0, true) << std::endl;
 
@@ -312,7 +312,7 @@ bool multisign (ripple::STTx& tx, Credentials const& signer)
 //  3. The transaction is signed by a different signer.
 bool exerciseMultiSign()
 {
-    using namespace ripple;
+    using namespace divvy;
 
     // Create credentials for the folks involved in the transaction.
     Credentials const alice {"alice"};
@@ -334,8 +334,8 @@ bool exerciseMultiSign()
 int main (int argc, char** argv)
 {
     // Display the version
-    std::cout << "ripple-libpp_demo built with ripple core version " <<
-        ripple::BuildInfo::getVersionString() << "\n";
+    std::cout << "divvy-libpp_demo built with divvy core version " <<
+        divvy::BuildInfo::getVersionString() << "\n";
 
     // Demonstrate single signing.
     auto allPass = exerciseSingleSign();

@@ -5,12 +5,12 @@ environment:
   # that it's a small download. We also use appveyor's free cache, avoiding fees
   # downloading from S3 each time.
   # TODO: script to create this package.
-  RIPPLED_DEPS_PATH: rippled_deps17.04
-  RIPPLED_DEPS_URL: https://ripple.github.io/Downloads/appveyor/%RIPPLED_DEPS_PATH%.zip
+  DIVVYD_DEPS_PATH: divvyd_deps17.04
+  DIVVYD_DEPS_URL: https://xdv.github.io/Downloads/appveyor/%DIVVYD_DEPS_PATH%.zip
 
   # CMake honors these environment variables, setting the include/lib paths.
-  BOOST_ROOT: C:/%RIPPLED_DEPS_PATH%/boost
-  OPENSSL_ROOT: C:/%RIPPLED_DEPS_PATH%/openssl
+  BOOST_ROOT: C:/%DIVVYD_DEPS_PATH%/boost
+  OPENSSL_ROOT: C:/%DIVVYD_DEPS_PATH%/openssl
 
   # We've had trouble with AppVeyor apparently not having a stack as large
   # as the *nix CI platforms.  AppVeyor support suggested that we try
@@ -21,7 +21,7 @@ environment:
   - build: cmake
     target: msvc.debug
     buildconfig: Debug
-    app: ripplelibppdemo
+    app: divvylibppdemo
 
 os: Visual Studio 2017
 
@@ -29,28 +29,28 @@ os: Visual Studio 2017
 # https://www.appveyor.com/docs/build-cache/
 # Resulting archive should not exceed 100 MB.
 cache:
-  - 'C:\%RIPPLED_DEPS_PATH%'
+  - 'C:\%DIVVYD_DEPS_PATH%'
 
 install:
   # We want  protoc.exe on PATH.
-  - SET PATH=C:/%RIPPLED_DEPS_PATH%;%PATH%
+  - SET PATH=C:/%DIVVYD_DEPS_PATH%;%PATH%
   - git submodule update --init --recursive
 
   # Download dependencies if appveyor didn't restore them from the cache.
   # Use 7zip to unzip.
   - ps: |
-        if (-not(Test-Path 'C:/$env:RIPPLED_DEPS_PATH')) {
-            echo "Download from $env:RIPPLED_DEPS_URL"
-            Start-FileDownload "$env:RIPPLED_DEPS_URL"
-            7z x "$($env:RIPPLED_DEPS_PATH).zip" -oC:\ -y > $null
+        if (-not(Test-Path 'C:/$env:DIVVYD_DEPS_PATH')) {
+            echo "Download from $env:DIVVYD_DEPS_URL"
+            Start-FileDownload "$env:DIVVYD_DEPS_URL"
+            7z x "$($env:DIVVYD_DEPS_PATH).zip" -oC:\ -y > $null
             if ($LastExitCode -ne 0) { throw "7z failed" }
         }
 
   # Newer DEPS include a versions file.
   # Dump it so we can verify correct behavior.
   - ps: |
-        if (Test-Path "C:/$env:RIPPLED_DEPS_PATH/versions.txt") {
-          cat "C:/$env:RIPPLED_DEPS_PATH/versions.txt"
+        if (Test-Path "C:/$env:DIVVYD_DEPS_PATH/versions.txt") {
+          cat "C:/$env:DIVVYD_DEPS_PATH/versions.txt"
         }
 
 build_script:
@@ -79,7 +79,7 @@ after_build:
 test_script:
   - ps: |
         & {
-          # Run the rippled unit tests
+          # Run the divvyd unit tests
           & $exe --unittest
           # https://connect.microsoft.com/PowerShell/feedback/details/751703/option-to-stop-script-if-command-line-exe-fails
           if ($LastExitCode -ne 0) { throw "Unit tests failed" }
