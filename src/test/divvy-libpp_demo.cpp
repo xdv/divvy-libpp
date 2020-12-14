@@ -68,13 +68,13 @@ bool demonstrateSigning(divvy::KeyType keyType, std::string seedStr,
         << "\" and public key \"" << toBase58(id) << "\"\n";
 
     auto const destination = parseBase58<AccountID>(
-        "rHb9CJAWyB4rj91VRWn96DkukG4bwdtyTh");
+        "dHb9CJAWyB4dj91VRWn96DkukG4bwrtyTh");
     assert(destination);
     auto const gateway1 = parseBase58<AccountID>(
-        "rhub8VRN55s94qWKDv6jmDy1pUykJzF3wq");
+        "dhub8VRN55s94qWKDv6jmDy1pUykJzF3wq");
     assert(gateway1);
     auto const gateway2 = parseBase58<AccountID>(
-        "razqQKzJRdB4UxFPWf5NEpEG3WMkmwgcXA");
+        "dazqQKzJRrB4UxFPWf5NEpEG3WMkmwgcXA");
     assert(gateway2);
     STTx noopTx(ttPAYMENT,
         [&](auto& obj)
@@ -146,15 +146,15 @@ bool exerciseSingleSign ()
     std::vector<bool> passes;
 
     passes.emplace_back(demonstrateSigning(divvy::KeyType::secp256k1,
-        "alice", "rG1QQv2nh2gr7RCZ1P8YYcBUKCCN633jCn"));
+        "alice", "dG1QQv2nh2gd7RCZ1P8YYcBUKCCN633jCn"));
 
     passes.emplace_back(demonstrateSigning(divvy::KeyType::ed25519,
-        "alice", "r9mC1zjD9u5SJXw56pdPhxoDSHaiNcisET"));
+        "alice", "d9mC1zjD9u5SJXw56prPhxoDSHaiNcisET"));
 
     // Genesis account w/ not-so-secret key.
     // Never hardcode a real secret key.
     passes.emplace_back(demonstrateSigning(divvy::KeyType::secp256k1,
-        "snoPBrXtMeMyMHUVTgbuqAfg1SUTb", "rHb9CJAWyB4rj91VRWn96DkukG4bwdtyTh"));
+        "snoPBrXtMeMyMHUVTgbuqAfg1SUTb", "dHb9CJAWyB4dj91VRWn96DkukG4bwdtyTh"));
 
     {
         passes.emplace_back(false);
