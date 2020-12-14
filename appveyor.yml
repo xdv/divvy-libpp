@@ -6,7 +6,7 @@ environment:
   # downloading from S3 each time.
   # TODO: script to create this package.
   DIVVYD_DEPS_PATH: divvyd_deps17.04
-  DIVVYD_DEPS_URL: https://xdv.github.io/Downloads/appveyor/%DIVVYD_DEPS_PATH%.zip
+  DIVVYD_DEPS_URL: https://xdv.github.io/downloads/appveyor/%DIVVYD_DEPS_PATH%.zip
 
   # CMake honors these environment variables, setting the include/lib paths.
   BOOST_ROOT: C:/%DIVVYD_DEPS_PATH%/boost
