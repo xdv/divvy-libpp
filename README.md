@@ -1,7 +1,7 @@
 # divvy-libpp
 
 [![Build Status](https://travis-ci.org/xdv/divvy-libpp.svg?branch=master)](https://travis-ci.org/xdv/divvy-libpp)
-[![Build status](https://ci.appveyor.com/api/projects/status/idswqburp8xeqk7y?svg=true)](https://ci.appveyor.com/project/xdv/divvy-libpp)
+[![Build status](https://ci.appveyor.com/api/projects/status/wk1sgwfi5e35y4lt?svg=true)](https://ci.appveyor.com/project/xdv/divvy-libpp)
 [![codecov](https://codecov.io/gh/xdv/divvy-libpp/branch/master/graph/badge.svg)](https://codecov.io/gh/xdv/divvy-libpp)
 
 Divvyd-compatible serialization and transaction signing sample/demo
